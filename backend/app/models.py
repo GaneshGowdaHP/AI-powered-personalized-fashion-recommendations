@@ -40,6 +40,7 @@ class StyleRecommendation(BaseModel):
     color_palette: list[str]
     styling_tips: list[str]
     reasoning: str = Field(..., description="Why this recommendation suits the user")
+    image_url: str = Field(default="", description="URL of the generated realistic outfit image")
 
 
 class RecommendationRequest(BaseModel):

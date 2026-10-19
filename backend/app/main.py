@@ -11,6 +11,7 @@ from app.claude_service import ClaudeService
 from app.config import settings
 from app.models import AnalysisResult, RecommendationRequest, RecommendationResponse
 from app.styling_engine import StylingEngine
+from app.image_service import ImageGenerationService
 
 app = FastAPI(
     title="Fashion AI Backend",
@@ -30,6 +31,7 @@ app.add_middleware(
 # Services
 claude_service = ClaudeService()
 styling_engine = StylingEngine()
+image_service = ImageGenerationService()
 
 # In-memory storage for analysis results (use DB in production)
 analysis_cache: dict[str, AnalysisResult] = {}
@@ -113,6 +115,12 @@ async def get_recommendations(request: RecommendationRequest):
             f"{analysis.body_type.capitalize()} body type, "
             f"{analysis.skin_tone} skin tone, "
             f"{analysis.current_style} style aesthetic"
+        )
+
+        # Generate realistic image
+        recommendation.image_url = await image_service.generate_outfit_image(
+            analysis_summary=profile_summary,
+            recommendation=recommendation
         )
 
         return RecommendationResponse(

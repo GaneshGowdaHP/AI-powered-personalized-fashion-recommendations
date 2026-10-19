@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { StyleRecommendation, RecommendationResponse } from '@/types/api';
+import { StyleRecommendation } from '@/types/api';
+import OutfitVisualizer from '@/components/OutfitVisualizer';
 
 interface RecommendationDisplayProps {
   recommendations: StyleRecommendation[];
@@ -13,10 +13,10 @@ export default function RecommendationDisplay({
   profileSummary,
 }: RecommendationDisplayProps) {
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto">
       <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-          <div>
+          <div className="flex-1">
             <h2 className="text-3xl font-bold text-gray-800">
               Your Personalized Recommendations
             </h2>
@@ -26,64 +26,92 @@ export default function RecommendationDisplay({
           </div>
         </div>
 
-        {/* Color Palette */}
-        <div className="mb-10 bg-gray-50 rounded-lg p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">
-            Recommended Color Palette
-          </h3>
-          <div className="flex flex-wrap gap-4">
-            {recommendations[0]?.color_palette.map((color, index) => (
-              <div key={index} className="flex flex-col items-center gap-2">
-                <div
-                  className="w-12 h-12 rounded-full border border-gray-200 shadow-sm"
-                  style={{ backgroundColor: color }}
+        <div className="grid lg:grid-cols-3 gap-10 mb-10">
+          {/* Visualizer Column */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <h3 className="text-sm font-bold text-gray-400 uppercase mb-4 text-center">AI Realistic View</h3>
+              {recommendations[0]?.image_url ? (
+                <img
+                  src={recommendations[0].image_url}
+                  alt="AI Generated Outfit"
+                  className="w-full rounded-lg object-cover aspect-[2/3] shadow-inner"
                 />
-                <span className="text-xs text-gray-600 capitalize">{color}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+              ) : (
+                <div className="w-full aspect-[2/3] bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 italic">
+                  Image generating...
+                </div>
+              )}
+            </div>
 
-        {/* Outfit Items */}
-        <div className="mb-10">
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">
-            Recommended Outfit
-          </h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recommendations[0]?.outfit_items.map((item, index) => (
-              <div
-                key={index}
-                className="border border-gray-100 rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition-all"
-              >
-                <div className="text-xs font-bold text-blue-600 uppercase mb-2">
-                  {item.category}
-                </div>
-                <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                  {item.description}
-                </h4>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {item.colors.map((color, i) => (
-                    <span
-                      key={i}
-                      className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
-                    >
-                      {color}
-                    </span>
-                  ))}
-                </div>
-                <p className="text-sm text-gray-600 mb-4 italic">
-                  "{item.style_notes}"
-                </p>
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <p className="text-xs text-blue-800 font-medium">
-                    Why this?
-                  </p>
-                  <p className="text-xs text-blue-700">
-                    {item.why_recommended}
-                  </p>
-                </div>
+            <OutfitVisualizer
+              outfitItems={recommendations[0]?.outfit_items || []}
+              colorPalette={recommendations[0]?.color_palette || []}
+            />
+          </div>
+
+          {/* Details Column */}
+          <div className="lg:col-span-2 space-y-10">
+            {/* Color Palette */}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                Recommended Color Palette
+              </h3>
+              <div className="flex flex-wrap gap-4">
+                {recommendations[0]?.color_palette.map((color, index) => (
+                  <div key={index} className="flex flex-col items-center gap-2">
+                    <div
+                      className="w-12 h-12 rounded-full border border-gray-200 shadow-sm"
+                      style={{ backgroundColor: color }}
+                    />
+                    <span className="text-xs text-gray-600 capitalize">{color}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Outfit Items */}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-6">
+                Recommended Outfit
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                {recommendations[0]?.outfit_items.map((item, index) => (
+                  <div
+                    key={index}
+                    className="border border-gray-100 rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition-all"
+                  >
+                    <div className="text-xs font-bold text-blue-600 uppercase mb-2">
+                      {item.category}
+                    </div>
+                    <h4 className="text-lg font-semibold text-gray-800 mb-2">
+                      {item.description}
+                    </h4>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {item.colors.map((color, i) => (
+                        <span
+                          key={i}
+                          className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
+                        >
+                          {color}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4 italic">
+                      "{item.style_notes}"
+                    </p>
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <p className="text-xs text-blue-800 font-medium">
+                        Why this?
+                      </p>
+                      <p className="text-xs text-blue-700">
+                        {item.why_recommended}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 

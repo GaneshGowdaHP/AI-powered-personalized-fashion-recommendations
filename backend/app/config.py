@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     max_upload_size_mb: int = 10
     upload_dir: str = "./uploads"
 
+    # AI Keys
+    replicate_api_token: str = ""
+
     # Debugging/Testing
     mock_mode: bool = True  # Set to False to use actual Claude API
 
