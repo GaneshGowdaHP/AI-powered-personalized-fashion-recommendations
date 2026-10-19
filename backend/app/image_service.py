@@ -17,8 +17,20 @@ class ImageGenerationService:
         Generate a realistic image of a person wearing the recommended outfit.
         """
         if settings.mock_mode:
-            # Return a high-quality fashion placeholder image
-            return "https://images.unsplash.com/photo-1515886657613-// la-photo-of-fashion-model.jpg" # Simplified for mock
+            import asyncio
+            await asyncio.sleep(1)
+
+            # Use high-quality Unsplash fashion photos based on occasion
+            occasion_images = {
+                "casual": "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&h=900&fit=crop&q=80",
+                "business": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=900&fit=crop&q=80",
+                "evening": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=600&h=900&fit=crop&q=80",
+                "athletic": "https://images.unsplash.com/photo-1518459031867-a89b944bffe4?w=600&h=900&fit=crop&q=80",
+                "date": "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&h=900&fit=crop&q=80",
+            }
+
+            occasion = recommendation.occasion.lower()
+            return occasion_images.get(occasion, occasion_images["casual"])
 
         # Construct a highly detailed prompt for the image generator
         items_desc = ", ".join([f"{item.description} in {', '.join(item.colors)}" for item in recommendation.outfit_items])
